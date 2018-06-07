@@ -10,8 +10,12 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.EditText;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -41,6 +45,43 @@ public class MainActivity extends AppCompatActivity
         dictionaryFragment = new DictionaryFragment();
         bookmarkFragment = new BookmarkFragment();
         goToFragment(dictionaryFragment, true);
+
+
+        //khi nghe sự kiện click button thì tới detailFragment
+        dictionaryFragment.setOnFragmentListener(new FragmentListener() {
+            @Override
+            public void onItemClick(String value) {
+                goToFragment(DetailFragment.getNewInstance(value), false);
+            }
+        });
+
+        //khi nghe sự kiện click button thì tới detailFragment
+        bookmarkFragment.setOnFragmentListener(new FragmentListener() {
+            @Override
+            public void onItemClick(String value) {
+                goToFragment(DetailFragment.getNewInstance(value), false);
+            }
+        });
+
+
+        // Filter
+        EditText edit_search = findViewById(R.id.edit_search);
+        edit_search.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                dictionaryFragment.filterValue(charSequence.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
     }
 
     @Override
@@ -63,9 +104,9 @@ public class MainActivity extends AppCompatActivity
 
         //Lưu lại trạng thái từ điển đã chọn
         String id = Global.getState(this, "dic_type");
-        if(id != null)
+        if (id != null)
             onOptionsItemSelected(menu.findItem(Integer.valueOf(id)));
-
+        else dictionaryFragment.resetDataSource(DB.getData(R.id.action_ev));
         return true;
     }
 
@@ -73,13 +114,14 @@ public class MainActivity extends AppCompatActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        Global.saveState(this,"dic_type", String.valueOf(id));
+        Global.saveState(this, "dic_type", String.valueOf(id));
 
-        //Đổi icon tương ứng khi chọn từ điển E-V, V-E
+        // Đổi icon và lấy DB tương ứng khi chọn từ điển E-V, V-E
         if (id == R.id.action_ev) {
+            dictionaryFragment.resetDataSource(DB.getData(id));
             menuSetting.setIcon(getDrawable(R.drawable.ev_white));
-        }
-        else if (id == R.id.action_ve) {
+        } else if (id == R.id.action_ve) {
+            dictionaryFragment.resetDataSource(DB.getData(id));
             menuSetting.setIcon(getDrawable(R.drawable.ve_white));
         }
 
@@ -93,7 +135,7 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //
-        if(id == R.id.nav_bookmark) {
+        if (id == R.id.nav_bookmark) {
             goToFragment(bookmarkFragment, false);
         }
 
