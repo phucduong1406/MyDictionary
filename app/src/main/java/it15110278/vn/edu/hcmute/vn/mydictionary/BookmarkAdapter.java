@@ -25,9 +25,9 @@ public class BookmarkAdapter extends BaseAdapter {
     Context mContext;
     ArrayList<String> mScource;
 
-    public BookmarkAdapter(Context context, String[] source) {
+    public BookmarkAdapter(Context context, ArrayList<String> source) {
         this.mContext = context;
-        this.mScource = new ArrayList<>(Arrays.asList(source));
+        this.mScource = source;
     }
 
     @Override

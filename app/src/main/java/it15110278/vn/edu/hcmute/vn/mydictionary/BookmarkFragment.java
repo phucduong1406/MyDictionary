@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -18,8 +20,16 @@ public class BookmarkFragment extends Fragment {
 
     private FragmentListener listener;  // Declare a variable for this listener in fragment
 
+    private DBHelper mDBHelper;
+
     public BookmarkFragment() {
         // Required empty public constructor
+    }
+
+    public static BookmarkFragment getNewIntance(DBHelper dbHelper) {
+        BookmarkFragment fragment = new BookmarkFragment();
+        fragment.mDBHelper = dbHelper;
+        return fragment;
     }
 
     @Override
@@ -39,10 +49,12 @@ public class BookmarkFragment extends Fragment {
     public void onViewCreated(final View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        //
+        setHasOptionsMenu(true);
 
         // Lấy danh sách bookmark
         ListView bookmarkList = view.findViewById(R.id.bookmarkList);
-        final BookmarkAdapter adapter = new BookmarkAdapter(getActivity(), getListOfWords());
+        final BookmarkAdapter adapter = new BookmarkAdapter(getActivity(), mDBHelper.getAllWordFromBookmark());
         bookmarkList.setAdapter(adapter);
 
         adapter.setOnItemClick(new ListItemListener() {
@@ -68,15 +80,6 @@ public class BookmarkFragment extends Fragment {
         });
     }
 
-    // Danh sách bookmark
-    String[] getListOfWords() {
-        String[] source = new String[]{
-                "abandonment",
-                "ability",
-        };
-        return source;
-    }
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -92,4 +95,11 @@ public class BookmarkFragment extends Fragment {
         this.listener = listener;
     }
 
+
+
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_clear, menu);
+    }
 }

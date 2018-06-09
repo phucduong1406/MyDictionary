@@ -15,10 +15,10 @@
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
+        android:layout_width="55dp"
+        android:layout_height="55dp"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
-        app:srcCompat="@drawable/dict"
+        app:srcCompat="@drawable/book"
         tools:srcCompat="@drawable/dict" />
 
     <TextView

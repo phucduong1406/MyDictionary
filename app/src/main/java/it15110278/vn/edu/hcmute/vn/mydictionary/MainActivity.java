@@ -14,13 +14,19 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     MenuItem menuSetting;  //icon chọn từ điển E-V, V-E
+    Toolbar toolbar;
+
+    DBHelper dbHelper;
 
     DictionaryFragment dictionaryFragment;
     BookmarkFragment bookmarkFragment;
@@ -29,8 +35,13 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+
+        //Apply SQLite
+        dbHelper = new DBHelper(this);
+
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -43,7 +54,7 @@ public class MainActivity extends AppCompatActivity
 
         //
         dictionaryFragment = new DictionaryFragment();
-        bookmarkFragment = new BookmarkFragment();
+        bookmarkFragment = BookmarkFragment.getNewIntance(dbHelper);
         goToFragment(dictionaryFragment, true);
 
 
@@ -51,7 +62,9 @@ public class MainActivity extends AppCompatActivity
         dictionaryFragment.setOnFragmentListener(new FragmentListener() {
             @Override
             public void onItemClick(String value) {
-                goToFragment(DetailFragment.getNewInstance(value), false);
+                String id = Global.getState(MainActivity.this, "dic_type");
+                int dicType = id == null ? R.id.action_ev : Integer.valueOf(id);
+                goToFragment(DetailFragment.getNewInstance(value, dbHelper, dicType), false);
             }
         });
 
@@ -59,7 +72,9 @@ public class MainActivity extends AppCompatActivity
         bookmarkFragment.setOnFragmentListener(new FragmentListener() {
             @Override
             public void onItemClick(String value) {
-                goToFragment(DetailFragment.getNewInstance(value), false);
+                String id = Global.getState(MainActivity.this, "dic_type");
+                int dicType = id == null ? R.id.action_ev : Integer.valueOf(id);
+                goToFragment(DetailFragment.getNewInstance(value, dbHelper, dicType), false);
             }
         });
 
@@ -102,28 +117,36 @@ public class MainActivity extends AppCompatActivity
         //
         menuSetting = menu.findItem(R.id.action_settings);
 
-        //Lưu lại trạng thái từ điển đã chọn
+        // Lưu lại trạng thái từ điển đã chọn
         String id = Global.getState(this, "dic_type");
         if (id != null)
             onOptionsItemSelected(menu.findItem(Integer.valueOf(id)));
-        else dictionaryFragment.resetDataSource(DB.getData(R.id.action_ev));
+        else {
+
+            // Apply SQLite
+            ArrayList<String> source = dbHelper.getWord(R.id.action_ev);
+            dictionaryFragment.resetDataSource(source);
+        }
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        Global.saveState(this, "dic_type", String.valueOf(id));
-
-        // Đổi icon và lấy DB tương ứng khi chọn từ điển E-V, V-E
-        if (id == R.id.action_ev) {
-            dictionaryFragment.resetDataSource(DB.getData(id));
-            menuSetting.setIcon(getDrawable(R.drawable.ev_white));
-        } else if (id == R.id.action_ve) {
-            dictionaryFragment.resetDataSource(DB.getData(id));
-            menuSetting.setIcon(getDrawable(R.drawable.ve_white));
+        if (item != null) {
+            int id = item.getItemId();
+            if (R.id.action_settings == id) return true;
+            Global.saveState(this, "dic_type", String.valueOf(id));
+            ArrayList<String> source = dbHelper.getWord(id);
+            // Đổi icon và lấy DB tương ứng khi chọn từ điển E-V, V-E
+            if (id == R.id.action_ev) {
+                dictionaryFragment.resetDataSource(source);
+                menuSetting.setIcon(getDrawable(R.drawable.ev_white));
+            } else if (id == R.id.action_ve) {
+                dictionaryFragment.resetDataSource(source);
+                menuSetting.setIcon(getDrawable(R.drawable.ve_white));
+            }
         }
+
 
         return super.onOptionsItemSelected(item);
     }
@@ -136,7 +159,10 @@ public class MainActivity extends AppCompatActivity
 
         //
         if (id == R.id.nav_bookmark) {
-            goToFragment(bookmarkFragment, false);
+            String activeFragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container).getClass().getSimpleName();
+            if (!activeFragment.equals(BookmarkFragment.class.getSimpleName())) {
+                goToFragment(bookmarkFragment, false);
+            }
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -153,5 +179,22 @@ public class MainActivity extends AppCompatActivity
         if (!isTop)
             fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
+    }
+
+
+    // Thay đổi menu của activity Bookmark
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        String activeFragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container).getClass().getSimpleName();
+        if (activeFragment.equals(BookmarkFragment.class.getSimpleName())) {
+            menuSetting.setVisible(false);
+            toolbar.findViewById(R.id.edit_search).setVisibility(View.GONE);
+            toolbar.setTitle("Bookmark");
+        } else {
+            menuSetting.setVisible(true);
+            toolbar.findViewById(R.id.edit_search).setVisibility(View.VISIBLE);
+            toolbar.setTitle("");
+        }
+        return true;
     }
 }

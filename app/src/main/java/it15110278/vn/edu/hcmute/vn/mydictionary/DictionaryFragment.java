@@ -13,12 +13,16 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 
+import java.util.ArrayList;
+
 public class DictionaryFragment extends Fragment {
 
     private String value = "Hello!";  // Toast
     private FragmentListener listener;  // Declare a variable for this listener in fragment
     ArrayAdapter<String> adapter;
     ListView dictList;
+
+    private ArrayList<String> mSource = new ArrayList<String>();
 
     public DictionaryFragment() {
         // Required empty public constructor
@@ -41,33 +45,25 @@ public class DictionaryFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-//        Button btnDeail = view.findViewById(R.id.btnDeital);
-//        btnDeail.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                if (listener != null)
-//                    listener.onItemClick(value);
-//            }
-//        });
 
 
         // Lấy danh sách dictionary
         dictList = view.findViewById(R.id.dictList);
-        adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, getListOfWords());
+        adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, mSource);
         dictList.setAdapter(adapter);
         dictList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 if (listener != null)
-                    listener.onItemClick(getListOfWords()
-                            [position]);
+                    listener.onItemClick(mSource.get(position));
             }
         });
     }
 
     // Reset data source
-    public void resetDataSource(String[] source) {
-        adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, source);
+    public void resetDataSource(ArrayList<String> source) {
+        mSource = source;
+        adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, mSource);
         dictList.setAdapter(adapter);
     }
 
@@ -86,36 +82,6 @@ public class DictionaryFragment extends Fragment {
     }
 
 
-    // Danh sách dictionary
-    String[] getListOfWords() {
-        String[] source = new String[]{
-                "abandon",
-                "abandonment",
-                "ability",
-                "able",
-                "about",
-                "above",
-                "abroad",
-                "absence",
-                "absent",
-                "absolute",
-                "absolutely",
-                "absorb",
-                "abuse",
-                "academic",
-                "accent",
-                "acceptable",
-                "access",
-                "accident",
-                "accidental",
-                "accidentally",
-                "bid",
-                "bill",
-                "bind",
-                "calculate"
-        };
-        return source;
-    }
 
     @Override
     public void onAttach(Context context) {
