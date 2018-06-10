@@ -128,7 +128,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public void deleteBookmark(Word word) {
         try {
-            String q = "DELETE FROM bookmark WHERE upper([" + COL_KEY + "]) = upper(?) AND [" + COL_VALUE + "] = ?);";
+            String q = "DELETE FROM bookmark WHERE upper([" + COL_KEY + "]) = upper(?) AND [" + COL_VALUE + "] = ?;";
             mDB.execSQL(q, new Object[]{word.key, word.value});
         } catch (SQLException ex) {
         }

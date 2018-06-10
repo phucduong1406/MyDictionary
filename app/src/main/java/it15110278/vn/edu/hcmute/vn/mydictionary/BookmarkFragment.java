@@ -69,14 +69,16 @@ public class BookmarkFragment extends Fragment {
         // Xóa từ trong danh sách bookmark
         adapter.setOnItemDeleteClick(new ListItemListener() {
 
-            //String value = String.valueOf(adapter.getItem(position));
-            //Toast.makeText(getContext(), value + " item is deleted", Toast.LENGTH_SHORT).show();
 
+            // Xóa trong list
             @Override
             public void onItemClick(int position) {
                 adapter.removeItem(position);
                 adapter.notifyDataSetChanged();
             }
+
+            // Xóa trong bookmark: hàm deleteBookmark
+
         });
     }
 

@@ -1,9 +1,11 @@
 package it15110278.vn.edu.hcmute.vn.mydictionary;
 
-import android.app.Fragment;
-import android.app.FragmentManager;
+import android.app.Dialog;
 import android.app.FragmentTransaction;
+import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -16,12 +18,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.Toast;
+import android.widget.ImageButton;
+import android.widget.RadioButton;
+import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     MenuItem menuSetting;  //icon chọn từ điển E-V, V-E
     Toolbar toolbar;
@@ -30,26 +34,42 @@ public class MainActivity extends AppCompatActivity
 
     DictionaryFragment dictionaryFragment;
     BookmarkFragment bookmarkFragment;
+    DetailFragment detailFragment;
+
+    ImageButton btnHear;
+
+    TextView textWord;
+    TextToSpeech toSpeech;
+
+    Dialog dialog;
+
+    int flagLang;  // cờ chọn từ điển E-V, V-E
+
+    RadioButton radioEng, radioVie;
+    LanguageDialog languageDialog;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
 
         //Apply SQLite
         dbHelper = new DBHelper(this);
 
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        // Add the button that opens the navigation drawer
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         //
@@ -58,7 +78,7 @@ public class MainActivity extends AppCompatActivity
         goToFragment(dictionaryFragment, true);
 
 
-        //khi nghe sự kiện click button thì tới detailFragment
+        // Khi nghe sự kiện click button thì tới detailFragment
         dictionaryFragment.setOnFragmentListener(new FragmentListener() {
             @Override
             public void onItemClick(String value) {
@@ -67,8 +87,6 @@ public class MainActivity extends AppCompatActivity
                 goToFragment(DetailFragment.getNewInstance(value, dbHelper, dicType), false);
             }
         });
-
-        //khi nghe sự kiện click button thì tới detailFragment
         bookmarkFragment.setOnFragmentListener(new FragmentListener() {
             @Override
             public void onItemClick(String value) {
@@ -79,7 +97,7 @@ public class MainActivity extends AppCompatActivity
         });
 
 
-        // Filter
+        // Filter: Tìm kiếm từ
         EditText edit_search = findViewById(R.id.edit_search);
         edit_search.addTextChangedListener(new TextWatcher() {
             @Override
@@ -97,7 +115,57 @@ public class MainActivity extends AppCompatActivity
 
             }
         });
+
+        // Change languege
+//        radioEng = findViewById(R.id.radioEng);
+//        radioVie = findViewById(R.id.radioVie);
+//        if (radioEng.isChecked()) {
+//            changeLang("en");
+//        }
+//        if (radioVie.isChecked()) {
+//            changeLang("vi");
+//        }
     }
+
+    // Khi nhấn vào btnHear
+    public void hearPronunciation(View view) {
+        textWord = findViewById(R.id.textWord);
+        btnHear = findViewById(R.id.btnVolume);
+        btnHear.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final String s = textWord.getText().toString();
+                toSpeech = new TextToSpeech(MainActivity.this, new TextToSpeech.OnInitListener() {
+                    @Override
+                    public void onInit(int i) {
+                        if (i != TextToSpeech.ERROR) {
+                            if (flagLang == 0) {
+                                toSpeech.setLanguage(Locale.ENGLISH);
+                            } else if (flagLang == 1) {
+                                toSpeech.setLanguage(Locale.forLanguageTag("vi-VN"));
+                            }
+                            toSpeech.speak(s, TextToSpeech.QUEUE_FLUSH, null);
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+
+    // Thay đổi ngôn ngữ
+    public void changeLang(String lang) {
+        Locale locale = new Locale(lang);
+        Configuration config = new Configuration();
+        config.locale = locale;
+
+        // Cập nhật lạo ngôn ngữ
+        getBaseContext().getResources().updateConfiguration(config, getBaseContext().getResources().getDisplayMetrics());
+
+        Intent intent = new Intent();
+        startActivity(intent);
+    }
+
 
     @Override
     public void onBackPressed() {
@@ -135,18 +203,24 @@ public class MainActivity extends AppCompatActivity
         if (item != null) {
             int id = item.getItemId();
             if (R.id.action_settings == id) return true;
+
             Global.saveState(this, "dic_type", String.valueOf(id));
+
             ArrayList<String> source = dbHelper.getWord(id);
+
             // Đổi icon và lấy DB tương ứng khi chọn từ điển E-V, V-E
             if (id == R.id.action_ev) {
                 dictionaryFragment.resetDataSource(source);
                 menuSetting.setIcon(getDrawable(R.drawable.ev_white));
+
+                flagLang = 0;
             } else if (id == R.id.action_ve) {
                 dictionaryFragment.resetDataSource(source);
                 menuSetting.setIcon(getDrawable(R.drawable.ve_white));
+
+                flagLang = 1;
             }
         }
-
 
         return super.onOptionsItemSelected(item);
     }
@@ -157,23 +231,32 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        //
+
         if (id == R.id.nav_bookmark) {
             String activeFragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container).getClass().getSimpleName();
             if (!activeFragment.equals(BookmarkFragment.class.getSimpleName())) {
                 goToFragment(bookmarkFragment, false);
             }
+        } else if (id == R.id.nav_lang) {
+            Dialog dialog = new Dialog(MainActivity.this);
+            dialog.setContentView(R.layout.dialog_language);
+            dialog.show();
+        } else if (id == R.id.nav_about) {
+            Intent intent = new Intent(MainActivity.this, AboutActivity.class);
+            startActivity(intent);
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
-    //
+    // Thêm fragment trong layout
     void goToFragment(android.support.v4.app.Fragment fragment, boolean isTop) {
-        android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
+        android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();  // lấy ra một đối tượng FragmentManager
         android.support.v4.app.FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);  // Chuyển giữa các fragment đẹp hơn
 
         fragmentTransaction.replace(R.id.fragment_container, fragment);
         if (!isTop)
@@ -197,4 +280,6 @@ public class MainActivity extends AppCompatActivity
         }
         return true;
     }
+
+
 }

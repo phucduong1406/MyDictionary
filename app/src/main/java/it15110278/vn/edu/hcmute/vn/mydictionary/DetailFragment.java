@@ -3,6 +3,8 @@ package it15110278.vn.edu.hcmute.vn.mydictionary;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcel;
+import android.speech.tts.TextToSpeech;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -12,6 +14,8 @@ import android.webkit.WebView;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.Locale;
 
 public class DetailFragment extends Fragment {
 
@@ -25,6 +29,12 @@ public class DetailFragment extends Fragment {
     private DBHelper mDBHelper;
     private int mDicType;
 
+
+    ImageButton btnHear;
+
+
+    TextToSpeech toSpeech;
+    int flagLang;  // cờ chọn từ điển E-V, V-E
 
     public DetailFragment() {
         // Required empty public constructor
@@ -42,6 +52,8 @@ public class DetailFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
     }
 
     @Override
@@ -54,6 +66,7 @@ public class DetailFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        btnHear = view.findViewById(R.id.btnVolume);
         textWord = view.findViewById(R.id.textWord);
         btnBookmark = view.findViewById(R.id.btnBookmark);
         btnVolume = view.findViewById(R.id.btnVolume);
@@ -87,6 +100,7 @@ public class DetailFragment extends Fragment {
                 }
             }
         });
+
     }
 
     @Override

@@ -4,24 +4,24 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp"
     android:background="@android:color/background_light">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="60dp"
+        android:layout_height="75dp"
         android:elevation="1.46dp">
 
         <TextView
+            android:layout_marginTop="15dp"
+            android:layout_marginLeft="16dp"
             android:id="@+id/textWord"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="fill_vertical"
-            android:text="Word"
             android:textColor="@color/colorRed"
             android:textColorLink="@color/colorRed"
-            android:textSize="24sp"
+            android:textSize="25sp"
             android:textStyle="bold" />
 
         <ImageButton
@@ -29,18 +29,24 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_gravity="center_vertical"
+            android:layout_marginTop="5dp"
             android:background="?actionBarItemBackground"
+            android:contentDescription="@string/hear"
             android:gravity="fill_vertical"
+            android:onClick="hearPronunciation"
             android:src="@drawable/ic_volume_up" />
 
         <ImageButton
+            android:layout_marginTop="5dp"
+            android:layout_marginRight="16dp"
             android:id="@+id/btnBookmark"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_gravity="center_vertical"
             android:background="?actionBarItemBackground"
             android:gravity="fill_vertical"
-            android:src="@drawable/ic_bookmark_border" />
+            android:src="@drawable/ic_bookmark_border"
+            android:contentDescription="@string/bookmark" />
     </LinearLayout>
 
     <ScrollView
@@ -52,7 +58,9 @@
             android:id="@+id/textWordTranslate"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@android:color/background_light"
-            android:text="Hello" />
+            android:layout_marginBottom="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:background="@android:color/background_light" />
     </ScrollView>
 </LinearLayout>

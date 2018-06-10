@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="16dp">
+
+    <TextView
+        android:id="@+id/textSelectLang"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="10dp"
+        android:text="@string/select_language"
+        android:textColor="#000"
+        android:textSize="16sp" />
+
+    <RadioGroup
+        android:layout_below="@+id/textSelectLang"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RadioButton
+            android:id="@+id/radioEng"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/english" />
+
+        <RadioButton
+            android:id="@+id/radioVie"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/vietnamese" />
+
+    </RadioGroup>
+
+</RelativeLayout>

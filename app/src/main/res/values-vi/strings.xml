@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Từ điển</string>
+    <string name="clear">Xóa tất cả</string>
+    <string name="clear_all">Xóa tất cả từ</string>
+    <string name="hear">Nghe</string>
+    <string name="bookmark">Đánh dấu</string>
+    <string name="vietnamese_english">Tiếng Việt - TIếng Anh</string>
+    <string name="english_vietnamese">TIếng Anh - Tiếng Việt</string>
+    <string name="action_settings">Cài đặt</string>
+    <string name="search">Tìm kiếm</string>
+    <string name="dic">Từ điển Anh Việt và Việt Anh</string>
+    <string name="remind">Nhắc nhở</string>
+    <string name="settings">CÀI ĐẶT</string>
+    <string name="lang">Ngôn ngữ</string>
+    <string name="network">MẠNG</string>
+    <string name="rate">Xếp hạng</string>
+    <string name="share">Chia sẻ</string>
+    <string name="about">Thông tin</string>
+    <string name="ap_wednesday">Lớp LTDĐ Sáng thứ 4</string>
+    <string name="select_language">Chọn ngôn ngữ</string>
+    <string name="english">Tiếng Anh</string>
+    <string name="vietnamese">Tiếng Việt</string>
+</resources>

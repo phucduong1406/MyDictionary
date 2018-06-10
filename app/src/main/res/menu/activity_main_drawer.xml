@@ -10,33 +10,33 @@
             android:title="Bookmark" />
     </group>
 
-    <item android:title="SETTINGS">
+    <item android:title="@string/settings">
         <menu>
             <item
                 android:id="@+id/nav_remind"
                 android:icon="@drawable/ic_update"
-                android:title="Nhắc nhở" />
+                android:title="@string/remind" />
             <item
                 android:id="@+id/nav_lang"
                 android:icon="@drawable/ic_language"
-                android:title="Ngôn ngữ" />
+                android:title="@string/lang" />
         </menu>
     </item>
 
-    <item android:title="NETWORK">
+    <item android:title="@string/network">
         <menu>
             <item
                 android:id="@+id/nav_rate"
                 android:icon="@drawable/ic_thumb_up"
-                android:title="Rate" />
+                android:title="@string/rate" />
             <item
                 android:id="@+id/nav_share"
                 android:icon="@drawable/ic_menu_share"
-                android:title="Help" />
+                android:title="@string/share" />
             <item
                 android:id="@+id/nav_about"
                 android:icon="@drawable/ic_info"
-                android:title="About" />
+                android:title="@string/about" />
         </menu>
     </item>
 
